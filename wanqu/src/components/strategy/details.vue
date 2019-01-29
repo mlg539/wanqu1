@@ -6,10 +6,10 @@
                    <el-col :span="3"><div class="grid-content bg-purple"><img :src="list.photo" alt=""></div></el-col>
                    <el-col :span="21">
                        <div class="grid-content bg-purple">
-                            <h1>{{list.topic}}</h1>
+                            <h1 style="margin-top:-5px">{{list.topic}}</h1>
                             <el-row class="c-black">
-                              <el-col :span="12"><div class="grid-content bg-purple ">{{list.uid}}发表于{{list.time|datatimefilter}} 浏览数：356</div></el-col>
-                              <el-col :span="12"><div class="grid-content bg-purple-light">点赞</div></el-col>
+                              <el-col :span="12"><div class="grid-content bg-purple ">{{list.uname}}&nbsp;&nbsp;&nbsp;发表于{{list.times|datatimefilter}} &nbsp;&nbsp;&nbsp;浏览数：{{list.point}}</div></el-col>
+                              <el-col :span="12"><div class="grid-content bg-purple-light">点赞:{{list.great}}</div></el-col>
                             </el-row>
                        </div></el-col>
                  </el-row>
@@ -42,6 +42,7 @@ export default {
             list:[],
             bg:"",
             contents:[],
+            cid:this.$route.query.cid,
         }
     },
     created() {
@@ -50,7 +51,9 @@ export default {
     },
     methods: {
         getbg(){
-            var url="http://127.0.0.1:3000/getbg"
+            console.log(this.cid)
+            var url="http://127.0.0.1:3000/getbg?cid="+this.cid;
+            console.log(url)
             this.axios.get(url).then(res=>{
                 console.log("bg:"+1)
                 if(res.data.code>0){
@@ -65,14 +68,16 @@ export default {
             })
         },
         getcontent(){
-            var url="http://127.0.0.1:3000/getcontent"
+            var url="http://127.0.0.1:3000/getcontent?cid="+this.cid
             this.axios.get(url).then(res=>{
                 console.log("content:"+2)
                 if(res.data.code>0){
-                this.contents=Array.prototype.slice.call(res.data.data)
-                for(var key of this.contents){
+               
+                for(var key of res.data.data){
                     key.img="http://127.0.0.1:3000/"+key.img;
                 }
+           
+                this.contents=res.data.data
                 console.log(this.contents)
                 }
                 else

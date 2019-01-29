@@ -29,15 +29,15 @@ module.exports = {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
     },
-    plugins: [
-      // new webpack.optimize.CommonsChunkPlugin('common.js'),
-      new webpack.ProvidePlugin({
-          jQuery: "jquery",
-          $: "jquery",
-          "windows.JQuery":"jquery"
-      })
-      ]
   },
+  plugins: [
+    // new webpack.optimize.CommonsChunkPlugin('common.js'),
+    new webpack.ProvidePlugin({
+        jQuery: "jquery",
+        $: "jquery",
+        "windows.JQuery":"jquery"
+    })
+    ],
   module: {
     rules: [
       {

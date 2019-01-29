@@ -62,86 +62,89 @@ app.get('/djrw1',(req,res)=>{
 
 
 
-//攻略
-app.post("/file/upload",(req,res)=>{     //设置路由
-	// console.log("req")           //
-	// console.log(req)           //
-	var form = new formidable.IncomingForm();    //实例对象
-	var targetFile = './public/upload';         //设置文件上传地址，文件需要自己提前创建好
-	form.keepExtensions = true;//保留后缀
-	form.uploadDir=targetFile;    //设置文件路由地址
-	form.parse(req,function(err,fields,files){ //解析req请求主体
-		if(err) throw err;       //抛出错误
-		console.log(fields)//以post方式提交的表单域数据都放在fields这个对象当中
-		console.log(files)//以post方式上传的文件、图片等文件域数据都放在files这个对象当中。
-		var oldpath=files.file.path;    //获取旧路径（用户的文路路径）         中间的file是自己定义的变量名
-		console.log(oldpath)            //
-		var newpath = path.join(path.dirname(oldpath),files.file.name);        //设置新路径（存入服务器下的路径）
-		console.log(newpath)            //
-		fs.rename(oldpath,newpath,(err)=>{       //修改文件名
-			if(err) throw err;           
-		})
-		res.send({code:1,data:newpath});
-	})
-
-})
-//上传图片2
-app.post("/upload",(req,res)=>{     //设置路由
-	// console.log("req")           //
-	// console.log(req)           //
-	var form = new formidable.IncomingForm();    //实例对象
-	var targetFile = './public/upload';         //设置文件上传地址，文件需要自己提前创建好
-	form.keepExtensions = true;//保留后缀
-	form.uploadDir=targetFile;    //设置文件路由地址
-	form.parse(req,function(err,fields,files){ //解析req请求主体
-		if(err) throw err;       //抛出错误
-		console.log(fields)//以post方式提交的表单域数据都放在fields这个对象当中
-		console.log(files)//以post方式上传的文件、图片等文件域数据都放在files这个对象当中。
-		var oldpath=files.file.path;    //获取旧路径（用户的文路路径）         中间的file是自己定义的变量名
-		console.log(oldpath)            //
-		var newpath = path.join(path.dirname(oldpath),files.file.name);        //设置新路径（存入服务器下的路径）
-		fs.rename(oldpath,newpath,(err)=>{       //修改文件名
-			if(err) throw err;           
-		})
-		res.send({code:1,data:newpath});
-	})
-
-})
-
-
-
-
-app.get("/getbg",(req,res)=>{
-	console.log("getbg"+1)
+//######攻略   陈焕武   莫岭红
+//功能一  获取头部背景  标题
+app.get("/getbg",(req,res)=>{	
+	var cid=req.query.cid*1
 	//默认uid=1
-	var sql="SELECT * FROM `commena` WHERE uid=1";
-	pool.query(sql,(err,result)=>{
+	if(!cid){
+		cid=1
+	}
+	var sql="SELECT * FROM `commenta` WHERE cid=?";
+	pool.query(sql,[cid],(err,result)=>{
 		if(err) throw err;
 		if(result.length>0)
 		res.send({code:1,data:result})
 	})   
 })
+//功能二  获取主体内容
 app.get("/getcontent",(req,res)=>{
-	console.log("getcontent"+2)
+	var cid=req.query.cid*1;
+	if(!cid){
+		cid=1
+	}
 	//默认uid=1 cid 是1  后续需要进行修改
-	var sql=`SELECT topic_small,img,city,details FROM commentb WHERE uid=1 and cid=1`;
-	pool.query(sql,(err,result)=>{
+	var sql=`SELECT topic_small,img,city,details FROM commentb WHERE cid=?`;
+	pool.query(sql,[cid],(err,result)=>{
 		if(err) throw err;
 		if(result.length>0){
 			console.log(result)
 		res.send({code:1,data:result})}
 	})    
 })
-app.get("/getImages",(req,res)=>{
-  //首页轮播的地址是写死的   因为这些就是服务器里面public下的资源
-  fs.readdir('./public/img/',(err,files)=>{
-    if(err) throw err;
-    for(var key in files){
-      files[key]="http://127.0.0.1:3000/img/"+files[key];
-      
-    }
-    console.log(files)
-    res.send(files);
-  });
-
+//攻略详情页左侧
+app.get("/gonglue_tuijian_left",(req,res)=>{
+	//创建sql
+	var sql="SELECT * ";
+	sql+="FROM gonglue_tuijian_left";
+	pool.query(sql,(err,result)=>{
+		if(err)throw err;
+		var rows=result
+		res.send(rows)
+	}) 
+	
 })
+//攻略-详情
+app.get("/gonglue-x",(req,res)=>{
+	//创建sql查询
+	var sql = "SELECT * ";
+	sql += "FROM commenta"; 
+	pool.query(sql, (err, result) => {
+		if (err) throw err;
+		var rows = result
+		res.send(rows)
+	}) 
+})
+//攻略推荐轮播
+app.get("/gonglue_tuijian_right",(req,res)=>{
+	//创建sql
+	var sql = "SELECT * ";
+	sql += "FROM gonglue_tuijian_right";
+	pool.query(sql, (err, result) => {
+		if (err) throw err;
+		var rows = result
+		res.send(rows)
+	}) 
+})
+//攻略达人
+app.get("/gonglue_daren", (req, res) => {
+	//创建sql
+	var sql = "SELECT * ";
+	sql += "FROM gonglue_daren";
+	pool.query(sql, (err, result) => {
+		if (err) throw err;
+		var rows = result
+		res.send(rows)
+	})
+})
+//攻略游记
+app.get("/gonglue_youji", (req, res) => {
+  //创建sql
+  var sql = "SELECT * ";
+  sql += "FROM gonglue_youji";
+  pool.query(sql, (err, result) => {
+    if (err) throw err;
+    var rows = result;
+    res.send(rows);
+  });
+});
